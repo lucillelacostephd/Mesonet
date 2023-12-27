@@ -1,43 +1,44 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 22 16:12:25 2023
-This script is to merge wind speed and direction dataset with the PMF source
-contribution dataset. Use absolute concentrations for source contributions, 
-this is the Contributions_conc worksheet of the Base results excel file.
+Created on Wed Dec 27 13:16:00 2023
+
 @author: lb945465
 """
 
 import pandas as pd
+import os
 
-# Load the dataframe with columns ws_ms and wd
-df1 = pd.read_csv(r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\NYSERDA VOC project\LBORLAZA\Mesonet\Data\Merged_File.csv', usecols=["datetime", "wspd_sonic", "wdir_sonic"])  
-df1=df1.set_index("datetime")
-df1=df1.rename_axis("Datetime")
+# Define the paths to the Excel files
+meteorology_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet\Merged_Meteorology.xlsx'
+pollutants_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet\Merged_Pollutants.xlsx'
+output_file = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet\Combined_Data.xlsx'
 
-# Load the excel worksheet as a dataframe
-excel_file = pd.ExcelFile(r"C:\Users\LB945465\OneDrive - University at Albany - SUNY\NYSERDA VOC project\LBORLAZA\Mesonet\Data\Pollutants\Merged_Pollutants.xlsx")  # Change the file name and path accordingly
-df2 = excel_file.parse("pm25")
-df2=df2.set_index("Datetime")
+# Get the list of sites (worksheet names) from both files
+meteo_xls = pd.ExcelFile(meteorology_path)
+pollutant_xls = pd.ExcelFile(pollutants_path)
 
-# Merge the dataframes using the shared index "Date"
-merged_df = df1.merge(df2, left_index=True, right_index=True)
+meteo_sites = set(meteo_xls.sheet_names)
+pollutant_sites = set(pollutant_xls.sheet_names)
 
-# Clean the merged_df by dropping rows with ws_ms less than 1 or equal to 0
-merged_df = merged_df[(merged_df["wspd_sonic"] > 0) & (merged_df["wspd_sonic"] >= 1)]
+# Find common sites in both files
+common_sites = meteo_sites.intersection(pollutant_sites)
 
-# Clean the merged_df by dropping rows with NaN in ws_ms or wd
-merged_df = merged_df.dropna(subset=["wspd_sonic", "wdir_sonic"])
+# Initialize an ExcelWriter for the output file
+with pd.ExcelWriter(output_file) as writer:
+    # Process each common site
+    for site in common_sites:
+        # Read the corresponding site data from both files
+        meteo_df = pd.read_excel(meteorology_path, sheet_name=site, index_col='Datetime')
+        pollutant_df = pd.read_excel(pollutants_path, sheet_name=site, index_col='Datetime')
 
-# Rename specific columns in merged_df
-merged_df.rename(columns={'wspd_sonic': 'ws', 
-                               }, inplace=True)
+        # Select only the required columns from the meteorology DataFrame
+        meteo_df = meteo_df[['wdir_sonic', 'wspd_sonic']]
 
-# Display the merged dataframe
-print(merged_df)
+        # Merge the data (ensure that the index or columns to merge on are aligned)
+        combined_df = meteo_df.merge(pollutant_df, left_index=True, right_index=True, how='outer')
 
-# Save the cleaned and merged dataframe to an Excel file
-output_file = "NPWR_merged.csv"
-merged_df.to_csv(output_file, index=True)
+        # Rename the index of the combined DataFrame
+        combined_df.index.name = 'Datetime'
 
-print("Cleaned and merged dataframe saved to", output_file)
-
+        # Write the combined DataFrame to the new Excel file
+        combined_df.to_excel(writer, sheet_name=site)

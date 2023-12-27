@@ -9,42 +9,31 @@ import pandas as pd
 import os
 import glob
 
-# Define the path to the folder
-folder_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\NYSERDA VOC project\Data\Mesonet'
+# Define the path to the folder and output Excel file
+folder_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet\Data'
+output_file = os.path.join(r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet', 'Merged_Meteorology.xlsx')
 
 # Get all CSV files in the folder
 csv_files = glob.glob(os.path.join(folder_path, '*.csv'))
 
-# Initialize an empty DataFrame to hold all merged data
-merged_df = pd.DataFrame()
+# Create an ExcelWriter object
+with pd.ExcelWriter(output_file) as writer:
+    # Process each file
+    for file in csv_files:
+        # Extract the site name from the filename
+        site_name = file.split('_')[-1].split('.')[0]
+        
+        # Read the CSV file into a DataFrame
+        df = pd.read_csv(file)
 
-# Process each file
-for file in csv_files:
-    # Extract the site name from the filename
-    site_name = file.split('_')[-1].split('.')[0]
-    
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(file)
-    
-    # Convert the 'datetime' column to DateTime format
-    df['datetime'] = pd.to_datetime(df['datetime'], format='%Y%m%dT%H%M')
+        # Convert the 'datetime' column to DateTime format
+        df['Datetime'] = pd.to_datetime(df['datetime'], format='%Y-%m-%d %H:%M:%S')
 
-    # Set 'datetime' as index
-    df.set_index('datetime', inplace=True)
+        # Set 'datetime' as index
+        df.set_index('Datetime', inplace=True)
 
-    # Resample the data to hourly
-    df = df.resample('H').mean()
-    
-    # Add the 'Site' column
-    df['Site'] = site_name
-    
-    # Append this DataFrame to the merged DataFrame
-    merged_df = pd.concat([merged_df, df], ignore_index=False)
+        # Resample the data to hourly
+        df = df.resample('H').mean()
 
-# Display the first few rows of the merged DataFrame
-print(merged_df.head())
-
-# Save the merged DataFrame to a new CSV file in the same folder
-output_file = os.path.join(folder_path, 'Merged_File.csv')
-merged_df.to_csv(output_file)
-
+        # Write the DataFrame to a worksheet named after the site_name
+        df.to_excel(writer, sheet_name=site_name)

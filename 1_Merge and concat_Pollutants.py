@@ -12,30 +12,32 @@ import glob
 # Define the path to the folder with Excel files
 folder_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet\Data\Pollutants'
 
-# Get all Excel files in the folder
+output_file = os.path.join(r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Extra\Extra work\Mesonet', 'Merged_Pollutants.xlsx')
+
+# Get all CSV files in the folder
 excel_files = glob.glob(os.path.join(folder_path, '*.csv'))
 
-# Create a Pandas Excel writer using XlsxWriter as the engine
-output_file = os.path.join(folder_path, 'Merged_Pollutants.xlsx')
-writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+# Initialize a dictionary to hold data for each site
+site_data = {}
 
-# Process each file
+# Process each pollutant file
 for file in excel_files:
-    # Extract the variable name from the filename (e.g., 'CO' from 'CO.csv')
-    variable_name = os.path.basename(file).split('.')[0]
+    # Extract pollutant name from the filename
+    pollutant_name = os.path.basename(file).split('.')[0]
 
-    # Read the Excel file into a DataFrame
-    df = pd.read_csv(file)
+    # Read the CSV file into a DataFrame with 'Datetime' as index
+    df = pd.read_csv(file, index_col='Datetime')
 
-    # Add the 'variable' column
-    df['variable'] = variable_name
+    # Transpose the DataFrame so that sites are rows and datetime is columns
+    df = df.transpose()
 
-    # Convert the 'Datetime' column to DateTime format and set as index
-    df['Datetime'] = pd.to_datetime(df['Datetime'])
-    df.set_index('Datetime', inplace=True)
-    
-    # Write each DataFrame to a different worksheet
-    df.to_excel(writer, sheet_name=variable_name, index=True)
+    # Append or merge this DataFrame to each site's DataFrame in the dictionary
+    for site in df.index:
+        if site not in site_data:
+            site_data[site] = pd.DataFrame()
+        site_data[site][pollutant_name] = df.loc[site]
 
-# Close the Pandas Excel writer and save the Excel file
-writer.save()
+# Write each site's DataFrame to a separate worksheet in an Excel file
+with pd.ExcelWriter(output_file) as writer:
+    for site, data in site_data.items():
+        data.to_excel(writer, sheet_name=site)
