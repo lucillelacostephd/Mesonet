@@ -6,9 +6,10 @@ Script to consolidate ozone, NOx, and NOy data.
 """
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Load the datasets
-file_path = r'.\O3_NOy_NOx.xlsx' # Insert file path here
+file_path = r'C:\Users\LB945465\OneDrive - University at Albany - SUNY\State University of New York\Spyder\SHAP\O3_NOy_NOx.xlsx' # Insert file path here
 
 # Function to read specific columns from a worksheet
 def read_specific_columns(sheet_name, columns, file_path):
@@ -51,10 +52,10 @@ ozone_data = ozone_data[ozone_data != 0]
 nitric_oxide_data = nitric_oxide_data[nitric_oxide_data != 0]
 noy_data = noy_data[noy_data != 0]
 
-# Convert to ppbv
-ozone_data=ozone_data*1000
-nitric_oxide_data=nitric_oxide_data*1000
-noy_data=noy_data*1000
+# # Convert to ppbv. Skip if you want to remain at ppm.
+# ozone_data=ozone_data*1000
+# nitric_oxide_data=nitric_oxide_data*1000
+# noy_data=noy_data*1000
 
 # Drop all rows with Nan
 ozone_data.dropna(inplace=True)
@@ -65,3 +66,18 @@ noy_data.dropna(inplace=True)
 ozone_data.to_excel("Ozone.xlsx")
 nitric_oxide_data.to_excel("NOx.xlsx")
 noy_data.to_excel("NOy.xlsx")
+
+# Plot 8-hour rolling average of Ozone
+# Calculate 8-hour rolling average
+ozone_data['8_hour_rolling_avg'] = ozone_data['Ozone'].rolling(window=8, min_periods=1).mean()
+
+plt.figure(figsize=(12, 6))
+plt.plot(ozone_data.index, ozone_data['8_hour_rolling_avg'], label='8-Hour Rolling Average')
+plt.axhline(y=0.07, color='r', linestyle='-', label='Exceedance Threshold (0.070 ppm)')
+plt.title('8-Hour Rolling Average of Ozone Concentration')
+plt.ylabel('Ozone Concentration (ppbv)')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
