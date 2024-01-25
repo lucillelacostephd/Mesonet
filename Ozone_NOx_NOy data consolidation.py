@@ -71,8 +71,8 @@ noy_data.to_excel("NOy.xlsx")
 # Calculate 8-hour rolling average
 ozone_data['8_hour_rolling_avg'] = ozone_data['Ozone'].rolling(window=8, min_periods=1).mean()
 
-plt.figure(figsize=(12, 6))
-plt.plot(ozone_data.index, ozone_data['8_hour_rolling_avg'], label='8-Hour Rolling Average')
+plt.figure(figsize=(12, 6), dpi=200)
+plt.scatter(ozone_data.index, ozone_data['8_hour_rolling_avg'], label='8-Hour Rolling Average', s=10, alpha=0.3)
 plt.axhline(y=0.07, color='r', linestyle='-', label='Exceedance Threshold (0.070 ppm)')
 plt.title('8-Hour Rolling Average of Ozone Concentration', fontweight="bold")
 plt.ylabel('Ozone Concentration (ppm)', fontweight="bold")
