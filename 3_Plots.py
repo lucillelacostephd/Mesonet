@@ -208,6 +208,7 @@ plot_avg_confidence_interval_for_all_pollutants(df_melted)
 
 def plot_diurnal_trends_per_site_and_pollutant_per_day(df_melted, dpi=200):
     pollutants = df_melted['Pollutant'].unique()
+    
     sites = df_melted['Site'].unique()
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     
@@ -261,6 +262,13 @@ plot_diurnal_trends_per_site_and_pollutant_per_day(df_melted)
 def plot_weekday_weekend_comparison(df, dpi=200):
     pollutants = df['Pollutant'].unique()
     
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
+
     for pollutant in pollutants:
         df_pollutant = df[df['Pollutant'] == pollutant]
         
@@ -281,6 +289,13 @@ plot_weekday_weekend_comparison(df_melted)
 def plot_seasonal_comparison(df, dpi=200):
     pollutants = df['Pollutant'].unique()
     
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
+    
     for pollutant in pollutants:
         df_pollutant = df[df['Pollutant'] == pollutant]
         
@@ -300,6 +315,14 @@ plot_seasonal_comparison(df_melted)
 
 def plot_seasonal_comparison_per_site(df, dpi=200):
     pollutants = df['Pollutant'].unique()
+    
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
+    
     sites = df['Site'].unique()
     
     for pollutant in pollutants:
@@ -322,6 +345,13 @@ plot_seasonal_comparison_per_site(df_melted)
 
 def plot_monthly_comparison(df, dpi=200):
     pollutants = df['Pollutant'].unique()
+    
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
     
     for pollutant in pollutants:
         df_pollutant = df[df['Pollutant'] == pollutant]
@@ -347,6 +377,14 @@ plot_monthly_comparison(df_melted)
 
 def plot_monthly_comparison_per_site(df, dpi=200):
     pollutants = df['Pollutant'].unique()
+   
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
+    
     sites = df['Site'].unique()
     
     for pollutant in pollutants:
@@ -369,6 +407,13 @@ plot_monthly_comparison_per_site(df_melted)
 
 def plot_overall(df, dpi=200):
     pollutants = df['Pollutant'].unique()
+    
+    # Create a new DataFrame that contains the combined data
+    combined_df = df.copy()
+    combined_df['Site'] = 'All networks'  # Set the 'Site' column to 'All Sites' for combined data
+    
+    # Append the combined data to the original DataFrame
+    df = df.append(combined_df, ignore_index=True)
     
     for pollutant in pollutants:
         df_pollutant = df[df['Pollutant'] == pollutant]
