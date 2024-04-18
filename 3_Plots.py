@@ -273,7 +273,7 @@ def plot_weekday_weekend_comparison(df, dpi=200):
         df_pollutant = df[df['Pollutant'] == pollutant]
         
         plt.figure(figsize=(15, 5), dpi=dpi)
-        sns.boxplot(data=df_pollutant, x='Site', y='Value', hue='Day_Category', showfliers=False)
+        sns.boxplot(data=df_pollutant, x='Site', y='Value', hue='Day_Category', showfliers=True)
               
         plt.title(f'Weekday vs. Weekend Concentrations of {pollutant}')
         plt.xticks(rotation=45)  # Rotate the x-axis labels for better readability
@@ -300,7 +300,7 @@ def plot_seasonal_comparison(df, dpi=200):
         df_pollutant = df[df['Pollutant'] == pollutant]
         
         plt.figure(figsize=(15, 5), dpi=dpi)
-        sns.boxplot(data=df_pollutant, x='Site', y='Value', hue='Season', showfliers=False)
+        sns.boxplot(data=df_pollutant, x='Site', y='Value', hue='Season', showfliers=True)
               
         plt.title(f'Seasonal Concentrations of {pollutant}')
         plt.xticks(rotation=45)  # Rotate the x-axis labels for better readability
@@ -332,7 +332,7 @@ def plot_seasonal_comparison_per_site(df, dpi=200):
             # Check if the DataFrame is not empty
             if not df_site_pollutant.empty:
                 plt.figure(figsize=(5, 5), dpi=dpi)
-                sns.boxplot(data=df_site_pollutant, x='Season', y='Value', showfliers=False)
+                sns.boxplot(data=df_site_pollutant, x='Season', y='Value', showfliers=True)
                 
                 plt.title(f'Seasonal Concentrations of {pollutant} at {site}')
                 plt.xlabel('Season')
@@ -362,7 +362,7 @@ def plot_monthly_comparison(df, dpi=200):
             # Check if the DataFrame is not empty
             if not df_pollutant_month.empty:
                 plt.figure(figsize=(20, 5), dpi=dpi)
-                sns.boxplot(data=df_pollutant_month, x='Site', y='Value', hue='Month', showfliers=False)
+                sns.boxplot(data=df_pollutant_month, x='Site', y='Value', hue='Month', showfliers=True)
                 
                 plt.title(f'Monthly Concentrations of {pollutant} for {month}')
                 plt.xticks(rotation=45)  # Rotate the x-axis labels for better readability
@@ -394,7 +394,7 @@ def plot_monthly_comparison_per_site(df, dpi=200):
             # Check if the DataFrame is not empty
             if not df_site_pollutant.empty:
                 plt.figure(figsize=(6, 5), dpi=dpi)
-                sns.boxplot(data=df_site_pollutant, x='Month', y='Value', showfliers=False)
+                sns.boxplot(data=df_site_pollutant, x='Month', y='Value', showfliers=True)
                 
                 plt.title(f'Monthly Concentrations of {pollutant} at {site}')
                 plt.xlabel('Month')
@@ -419,7 +419,7 @@ def plot_overall(df, dpi=200):
         df_pollutant = df[df['Pollutant'] == pollutant]
         
         plt.figure(figsize=(15, 5), dpi=dpi)
-        sns.boxplot(data=df_pollutant, x='Site', y='Value', showfliers=False)
+        sns.boxplot(data=df_pollutant, x='Site', y='Value', showfliers=True)
               
         plt.title(f'Overall Concentrations of {pollutant}')
         plt.xticks(rotation=45)  # Rotate the x-axis labels for better readability
